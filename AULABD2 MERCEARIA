@@ -1,0 +1,102 @@
+--AULA BANCO 2 DIA 13 DE AGOSTO 2019
+CREATE DATABASE MERCEARIA;
+
+CREATE TABLE PRODUTO (
+	CODIGO INT PRIMARY KEY,
+	DESCRICAO VARCHAR(30) NOT NULL,
+	VALOR_SEM_IMPOSTO MONEY NOT NULL,
+	VALOR_UNITARIO MONEY NOT NULL
+);
+
+INSERT INTO PRODUTO VALUES (023,'MARTELO DUPLO',10,13.30),(014,'ALICATE',25.30,37),(033,'ESMERIL',1.70,2);
+
+--VALOR SEM IMPOSTO ACIMA DE 20,00
+SELECT * FROM PRODUTO WHERE VALOR_SEM_IMPOSTO > '20';
+
+--FORMA CRESCENTE POR DESCRICÃO
+SELECT DESCRICAO, VALOR_UNITARIO AS "VALOR PAGO" FROM PRODUTO ORDER BY VALOR_UNITARIO ASC;
+
+-- VALOR INITARIO ACIMA DE 9,90
+SELECT DESCRICAO, VALOR_UNITARIO FROM PRODUTO WHERE VALOR_UNITARIO > '9,90' ORDER BY VALOR_UNITARIO DESC;
+-- VALOR UNITARIO COM ACRESCIMO DE 15%
+
+SELECT CODIGO, DESCRICAO,VALOR_SEM_IMPOSTO, VALOR_UNITARIO, VALOR_UNITARIO + (VALOR_UNITARIO * 0.15) AS "+15%" FROM PRODUTO 
+WHERE VALOR_UNITARIO < '20' ORDER BY DESCRICAO; 
+
+--ESMERIL COM 13% E 16%
+SELECT DESCRICAO, VALOR_UNITARIO, VALOR_UNITARIO + (VALOR_UNITARIO * 0.13) AS "13% UP",VALOR_UNITARIO + (VALOR_UNITARIO * 0.16) 
+AS "16% UP" FROM PRODUTO 
+WHERE DESCRICAO = 'ESMERIL';
+----------------------------------------------------------------------------------------------------------------------------------SISTEMAS DE INFORMACAO-------------------------------------------------------------------------------------------------------------------------------------
+--AULA BANCO 2 DIA 15 DE AGOSTO 2019
+-- criando base de dados
+create database GestorCF;
+
+-- criando tabelas
+create table Funcionarios(
+	codigo int primary key,
+	nome varchar(100) not null,
+	salario money,
+	nascimento date
+);
+
+create type cp as enum('rua','trav','av');
+create table Endereco(
+	id int primary key,
+	tipo cp,
+	logradouro varchar(100) not null,
+	numero varchar(10),
+	bairro varchar(20)
+);
+
+create table Clientes(
+	cpf int not null,
+	nome varchar(50) not null,
+	sobrenome varchar(50),
+	idade int,
+	sexo char(1),
+	funcionario int not null,
+	funcionario_id int,
+	primary key (cpf, funcionario),
+	foreign key (funcionario_id) references Funcionarios(codigo)
+);
+
+create table Servico(
+	codigo varchar(10) not null,
+	descricao varchar(40) not null,
+	valor money not null,
+	funcionario_id int,
+	cliente_cpf int,
+	primary key(codigo),
+	foreign key(cliente_cpf, funcionario_id) references Clientes(cpf, funcionario)
+);
+--povoando Funcionarios
+insert into Funcionarios values(1,'Jubileu',1000,'09-08-1990'),(2,'Jujuba',1000,'17-05-1988'),
+								 (3,'Raimundo',2000,'09-08-1970'),(4,'Raimudinha',2000,'17-05-1980'),
+								 (31,'Galileu',3000,'09-08-1970'),(6,'Golias',1400,'17-05-1980');
+-- povoando Clientes
+insert into Clientes values(0009997771,'Mahatma kali','da silva',76,'F',31),(0039977771,'Osama bin','da conceicao',80,'M',31),
+								 (0009937701,'Mara','Maravilha',76,'F',31),(0202497771,'Jair','Messias',49,'M',1),
+								 (1119997771,'Gandi','da silva',56,'M',2),(1219997091,'Mia','Kalifa',30,'F',3),
+								 (1219293091,'Bruna','Surfistinha',35,'F',4);
+--povoando Endereco
+insert into Endereco values(1,'rua','dos loucos','22a','joao cabral'),
+								(2,'rua','beco da faca','666','planalto'),(3,'rua','barro seco','664','planalto'),
+								(4,'av','paraiba','687','betolandia');
+
+-- salarios dos funcionarios igual a 1000
+select nome, salario from Funcionarios where salario = '1000';
+
+--liste o nome e salario e nascimento dos que ganham de 1000 a 2000
+select nome, salario, nascimento from Funcionarios where salario >='1000' and salario <='2000';
+
+--Exibir nome e sobrenome dos clientes masculino de A à Z
+select nome, sobrenome from Clientes where sexo = 'M' ORDER BY nome asc;
+
+-- bairro PLANALTO
+select tipo, logradouro, bairro from Endereco where bairro = 'planalto';
+
+-- nome idade e sobrenome das clientes acima de 60 
+select nome, sobrenome, idade,funcionario from Clientes where sexo= 'F' and funcionario = 31 and idade > 60;
+
+----------------------------------------------------------------------------------------------------------------------------------SISTEMAS DE INFORMACAO-------------------------------------------------------------------------------------------------------------------------------------

@@ -1,0 +1,115 @@
+
+-- CRIANDO TABELA PROFESSOR
+create sequence control_p ;
+create table Professor(
+	codigo int primary key default nextval('control_p'),
+	nome varchar(40),
+	tempo_servico int,
+	idade int,
+	salario money
+);
+
+--CRIANDO TABELA TURMA
+create sequence control_turma;
+create table Turma(
+	id int primary key default nextval('control_turma'),
+	ano int,
+	num_alunos int,
+	descricao varchar(40)
+);
+
+--TABELA ASSOCIATIVA PARA PROFESSOR E TURMA
+create sequence Prof_turma;
+create table Professor_turma(
+	controle int primary key default nextval('Prof_turma'),
+	id_turma int,
+	codigo_prof int,
+	foreign key (id_turma) references Turma(id),
+	foreign key (codigo_prof) references Professor(codigo)
+	);
+	
+-- CRIANDO TABELA ALUNO
+create sequence control_aluno;
+create table Aluno(
+	matricula int primary key default nextval('control_aluno'),
+	nome varchar(40),
+	rua varchar(30),
+	idade int,
+	email varchar(20),
+	cod_turma int,
+	foreign key (cod_turma) references Turma(id)
+);
+
+-- POVOANDO OS PROFESSORES
+insert into Professor (nome,tempo_servico, idade, salario) values('CARLOS ANDRE',14,23,1423.45),
+																								('JOAO ALBERTO',10,40,800.89),
+																								('MARILIA PINTO',3,35,1005.20) ;
+	
+SELECT * FROM Professor	;
+
+-- POVOANDO TURMAS
+insert into Turma (ano, num_alunos, descricao) values(2010,20, '3 SEMESTRE'),
+																				(2011,30, '4 SEMESTRE'),
+																				(2011,43, '5 SEMESTRE'),
+																				(2009,23, '4 SEMESTRE');
+SELECT * FROM Turma ;
+
+-- POVOANDO ALUNO
+insert into Aluno (nome, rua, idade, email,cod_turma) values('CARLA','SAO PEDRO',14,'CARLA@GMAIL',2),
+																						('ADRIANA','SAO PAULO',18,'ADR@IG',2),
+																						('PAULO','PE CICERO',14,'PAULO@BOL',3),
+																						('ANDREY','CASTELO BRANCO',17,'ANDREY@BOL',1);
+--OS ALUNOS ESTÃO COM AUTO INCREMENTO, POR TANTO ESTOU ATRIBUINDO VALORES MANUAIS A CADA ALUNO.
+-- POREM BASTA RETIRAR O AUTO INCREMENTO AO CRIAR A TABELA E ADD MANUALMENTE, NESSE CASSO NÃO PRECISANDO UTILIZAR ESSE UPDATE
+update Aluno SET matricula = 1409 where matricula = 1;
+update Aluno SET matricula = 1476 where matricula = 2;
+update Aluno SET matricula = 1288 where matricula = 3;
+update Aluno SET matricula = 3502 where matricula = 4;
+
+SELECT * FROM Aluno;
+
+-- RESOLVENDO AS QUESTOES
+
+--1 QUESTÃO: IDADE E TEMPO DE SERVICO DO PROFESSOR JOAO
+SELECT idade, tempo_servico, nome as PROFESSOR from Professor where nome = 'JOAO ALBERTO';
+
+--2 QUESTÃO: TUDO DOS ALUNO DA TURMA 2
+select * from Aluno where cod_turma = 2;
+
+--3 QUESTÂO:ENCONTRE NOME, NUMERO,MORADA DOS ALUNO CUJA IDADE SEJA IGUAL A 15 OU 18
+SELECT matricula, nome, idade, rua as "ENDEREÇO" from Aluno where idade = 15 OR idade=18;
+
+--4 QUESTÂO: ENCONTRE NOME, NUMERO,MORADA DOS ALUNO CUJA IDADE SEJA DIFERENTE DE 16
+SELECT matricula, nome, idade, rua as "ENDEREÇO" from Aluno where idade != 16;
+
+--5 QUESTAO: NOME PROFESSORES CUJA IDADE MAIOR QUE 15, SERVICO MENOR QUE 13 ANOS
+SELECT nome, idade, tempo_servico from Professor where idade > 15 and tempo_servico < 13;
+
+--6 QUESTÂO:ENCONTRE NOME, NUMERO,MORADA DOS ALUNO CUJA IDADE SEJA 15, 16 ou 18 ANOS
+SELECT matricula, nome, idade, rua as "ENDEREÇO" from Aluno where idade = 15 OR idade = 16 OR idade = 18
+
+--7 QUESTAO:ENCONTRE NOME, NUMERO,MORADA DOS ALUNO CUJA IDADE SEJA ENTRE 18 E 20 ANOS
+SELECT matricula, nome, idade, rua as "ENDEREÇO" from Aluno where idade >= 18 and idade <= 20;
+
+--8 QUESTÂO: EXIBIR CODIGO, NOME, SALARIO, DAR REAJUSTE 8%
+SELECT codigo, nome, salario, salario+(salario*0.08) as REAJUSTE from Professor;
+
+--9 QUESTAO: ENCONTRAR CODIGO DE PROFESSOR, NOME, TEMPO DE SERVIÇO DOS MESMOS ORDENANDO POR TEMPO DE SERVIÇO LIMIT 3
+SELECT codigo, nome, tempo_servico from Professor order by tempo_servico limit 3;
+
+--10 QUESTÃO: ENCONTRAR CODIGO DE PROFESSOR, NOME, TEMPO DE SERVIÇO DOS MESMOS ORDENANDO POR IDADE DE FORMA DESC
+SELECT codigo, nome, tempo_servico, idade from Professor order by idade DESC;
+
+--11 QUESTÂO: ENCONTRAR CODIGO DE PROFESSOR, NOME, TEMPO DE SERVIÇO DOS MESMOS ORDENANDO POR TEMPO DE SERVIÇO LIMIT 3
+SELECT codigo, nome, tempo_servico from Professor order by tempo_servico;
+
+--12 QUESTAO: ENCONTRAR CODIGO DO ALUNO, NOME, EMAIL ONDE IDADE SEJA IGUAL OU MENOR A 17, LIMITE POR 2
+SELECT matricula, nome, email, idade FROM aluno where idade <= 17 LIMIT 2;
+
+--13 QUESTÃO: LISTAR NOME, EMAIL, DESCRICAO DA TURMA ONDE A TURMA SEJA DE 2011
+select a.nome, a.email, t.descricao, t.ano from Aluno a inner join Turma t on id = cod_turma where ano = 2011;
+
+--14 QUESTÂO: ECONTRE O NUMERO DE ALUNOS DA TURMA DE CARLA E ADRIANA
+SELECT a.nome, t.descricao, t.num_alunos FROM Aluno a inner join Turma t on t.id = a.cod_turma where a.nome = 'CARLA' OR a.nome ='ADRIANA'; 
+
+
