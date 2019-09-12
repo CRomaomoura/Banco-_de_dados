@@ -1,6 +1,6 @@
 create database ClinicaGestor;
 
-create table clinica (
+CREATE TABLE clinica (
 	id int primary key,
 	especializacao varchar(45),
 	nome varchar(45)
@@ -10,13 +10,14 @@ create table clinica (
 INSERT INTO clinica values (1, 'Infantil','Saude mais');
 INSERT INTO clinica values (2 ,'Adultos','Qualis');
 
-create table pessoa (
+CREATE TABLE pessoa (
 	id int primary key,
 	nome varchar(45),
 	rg varchar(45),
 	idade int
 	);
--- POVOANDO PESSOAs
+	
+-- POVOANDO PESSOAS
 --PACIENTES
 INSERT INTO pessoa values (1,'Gesison Gomes','45456653',20);
 INSERT INTO pessoa values (2,'Andre Pereira','454434353',21);
@@ -36,7 +37,8 @@ INSERT INTO pessoa values (9'Alex Dias Pereira','8885553',36);
 INSERT INTO pessoa values (10,'ALEXANDRINO Sandro Gomes','98765553',39);
 INSERT INTO pessoa values (11,'Joao Alex Furtado','80955553',30);
 INSERT INTO pessoa values (12,'Alexandra Barros Gomes','09765553',25);
-create table medico(
+
+CREATE TABLE medico(
 	id int primary key,
 	pessoa_id int not null,
 	crm varchar(45),
@@ -52,12 +54,13 @@ INSERT INTO medico values (5,10,'988567');
 INSERT INTO medico values (6,11,'112567');
 INSERT INTO medico values (7,12,'324567');
 	
-create table paciente(
+CREATE TABLE paciente(
 	id int primary key,
 	pessoa_id int not null,
 	peso real,
 	foreign key(pessoa_id) references pessoa(id)
 	);
+	
 -- POVOANDO PACIENTES
 INSERT INTO paciente values (1,1,67.00);
 INSERT INTO paciente values (2,2,60.00);
@@ -71,7 +74,7 @@ INSERT INTO paciente values (9,16,40.00);
 INSERT INTO paciente values (10,17,50.00);
 
 
-create table consulta(
+CREATE TABLE consulta(
 	id int primary key,
 	medico_id int not null,
 	paciente_id int not null,
@@ -81,6 +84,7 @@ create table consulta(
 	foreign key(paciente_id) references paciente(id),
 	foreign key(clinica_id) references clinica(id)
 	);
+	
 --POVOANDO CONSULTA
 INSERT INTO consulta values (1,6,2,1,now());
 INSERT INTO consulta values (2,6,1,1,now());
@@ -96,36 +100,72 @@ INSERT INTO consulta values (10,1,10,2,now());
 	-- RESOLVENDO AS QUESTOES
 
 --Peso e nome dos 5 primeiros pacientes ordenados por nome, que são maiores de idade
-SELECT pessoa.nome, paciente.peso FROM pessoa INNER JOIN paciente ON pessoa.id = paciente.pessoa_id 
-WHERE idade >= 18 ORDER BY pessoa.nome LIMIT 5; 
+SELECT pessoa.nome, paciente.peso 
+FROM pessoa 
+INNER JOIN paciente 
+ON pessoa.id = paciente.pessoa_id 
+WHERE idade >= 18 
+ORDER BY pessoa.nome 
+LIMIT 5; 
 
 --Nome dos 5 primeiros medicos que começam com "Ale" ou "ALE".
-SELECT p.nome as "Médico", m.crm FROM pessoa p INNER JOIN medico m ON p.id = m.pessoa_id 
-WHERE p.nome ILIKE'Ale%' OR p.nome ILIKE'ALE%' LIMIT 5;
+SELECT p.nome AS "Médico", m.crm 
+FROM pessoa p 
+INNER JOIN medico m 
+ON p.id = m.pessoa_id 
+WHERE p.nome ILIKE 'Ale%'  
+LIMIT 5;
+
+SELECT p.nome as "Médico", m.crm 
+FROM pessoa p 
+INNER JOIN medico m 
+ON p.id = m.pessoa_id 
+WHERE p.nome LIKE'Ale%' OR p.nome LIKE'ALE%' 
+LIMIT 5;
 
 --exibir todas a consultas (datas) e nomes dos pacientes ordenados por nome do paciente de forma crescente
-SELECT p.nome, c.data AS "Data da Consulta" FROM pessoa p INNER JOIN paciente pc ON p.id = pc.pessoa_id INNER JOIN consulta c ON pc.id = c.paciente_id ORDER BY p.nome ASC;
+SELECT p.nome, c.data AS "Data da Consulta" 
+FROM pessoa p 
+INNER JOIN paciente pc 
+ON p.id = pc.pessoa_id 
+INNER JOIN consulta c 
+ON pc.id = c.paciente_id 
+ORDER BY p.nome ASC;
 
 -- Exiba o nome do medico e do paciente das consultas realizadas pela clinica saude mais
-SELECT p.nome AS "Paciente", ps.nome AS "Médico", cl.nome AS "Clinica" from pessoa p
-INNER JOIN paciente pc ON pc.pessoa_id = p.id
-INNER JOIN consulta c ON c.paciente_id = pc.id
-INNER JOIN medico m ON m.id = c.medico_id
-INNER JOIN pessoa ps ON ps.id = m.pessoa_id
-INNER JOIN clinica cl ON cl.id = c.clinica_id
+SELECT p.nome AS "Paciente", ps.nome AS "Médico", cl.nome AS "Clinica" 
+FROM pessoa p
+INNER JOIN paciente pc 
+ON pc.pessoa_id = p.id
+INNER JOIN consulta c 
+ON c.paciente_id = pc.id
+INNER JOIN medico m 
+ON m.id = c.medico_id
+INNER JOIN pessoa ps 
+ON ps.id = m.pessoa_id
+INNER JOIN clinica cl 
+ON cl.id = c.clinica_id
 WHERE cl.nome = 'Saude mais';
 
 -- Pacientes, nome e rg, que se consultaram na clinica Qualis, pelo medico João Alfredo com idades superior a 49 anos
-SELECT p.nome AS "Paciente", p.rg, p.idade, cl.nome AS "Clinica", ps.nome AS "Médico" FROM pessoa p 
-INNER JOIN paciente pc ON p.id = pc.pessoa_id
-INNER JOIN consulta c ON pc.id = c.paciente_id
-INNER JOIN clinica cl ON cl.id = c.clinica_id
-INNER JOIN medico m ON m.id = c.medico_id
-INNER JOIN pessoa ps ON ps.id = m.pessoa_id
+SELECT p.nome AS "Paciente", p.rg, p.idade, cl.nome AS "Clinica", ps.nome AS "Médico" 
+FROM pessoa p 
+INNER JOIN paciente pc 
+ON p.id = pc.pessoa_id
+INNER JOIN consulta c 
+ON pc.id = c.paciente_id
+INNER JOIN clinica cl 
+ON cl.id = c.clinica_id
+INNER JOIN medico m 
+ON m.id = c.medico_id
+INNER JOIN pessoa ps 
+ON ps.id = m.pessoa_id
 WHERE p.idade > 49 AND cl.nome = 'Qualis' AND ps.nome = 'Joao Alfredo'
 
 -- Listar as clinicas especializadas em crianças atraves do termo infantil
-SELECT nome AS "Clinica", especializacao FROM clinica WHERE especializacao = 'Infantil';
+SELECT nome AS "Clinica", especializacao 
+FROM clinica 
+WHERE especializacao = 'Infantil';
 
 --Adicione o campo valor em consulta
 ALTER TABLE consulta ADD COLUMN valor money;
@@ -142,8 +182,12 @@ UPDATE consulta SET valor = 900.00 WHERE id = 9;
 UPDATE consulta SET valor = 1000.00 WHERE id = 10;
 
 -- Liste as consultas com o desconto AFAGU de 10%. para isso exiba o nome do medico, CRM, nome da Clinica e data da consulta. Ordenar por data de realização da consulta
-SELECT p.nome AS "Médico", m.crm, cl.nome AS "Clinica", c.data AS "Dia da consulta", c.valor AS "Sem Desconto", ((c.valor)-((c.valor * 10)/100)) AS "Desconto Afagu" FROM pessoa p
-INNER JOIN medico m ON m.pessoa_id = p.id
-INNER JOIN consulta c ON m.id = c.medico_id
-INNER JOIN clinica cl ON cl.id = c.clinica_id
+SELECT p.nome AS "Médico", m.crm, cl.nome AS "Clinica", c.data AS "Dia da consulta", c.valor AS "Sem Desconto", ((c.valor)-((c.valor * 10)/100)) AS "Desconto Afagu" 
+FROM pessoa p
+INNER JOIN medico m 
+ON m.pessoa_id = p.id
+INNER JOIN consulta c 
+ON m.id = c.medico_id
+INNER JOIN clinica cl 
+ON cl.id = c.clinica_id
 ORDER BY c.data;
