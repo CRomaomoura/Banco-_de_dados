@@ -1,0 +1,108 @@
+create database Gestor_parking
+
+create table Cliente (
+	cpf integer primary key,
+	nome varchar(60),
+	dtNasc date
+);
+
+create table Modelo(
+	codMod integer primary key,
+	desc_2 varchar(40)
+);
+
+create table Veiculo(
+	placa varchar(8) primary key,
+	modelo_codMod integer,
+	cliente_cpf integer,
+	cor varchar(20),
+	foreign key (modelo_codMod) references Modelo(codMod),
+	foreign key (cliente_cpf) references Cliente(cpf)
+);
+
+create table Patio(
+	num integer primary key,
+	ender varchar(40),
+	capacidade integer
+);
+
+create table Estaciona(
+	cod integer primary key,
+	patio_num integer,
+	veiculo_placa varchar(8),
+	dtEntrada varchar(10),
+	dtSaida varchar(10),
+	hrEntrada varchar(10),
+	hrSaida varchar(10),
+	foreign key (patio_num) references Patio(num),
+	foreign key (veiculo_placa) references Veiculo(placa)
+);
+
+insert into Cliente 
+values  (000362236, 'Antonio chaves','1990-06-30'),
+	    	(252654789, 'Matheus Silva','1991-07-4'),
+	    	(123689000, 'Marcos Lima','1995-06-23'),
+	    	(123798011, 'Antonio Carlos','1994-08-10');
+		
+insert into Modelo values(6,'Jipe Renegate'),(7,'Ferrary'),(8,'Fusca'),(9,'Hilux'),(10,'brasilia');
+
+insert into Veiculo 
+values('OKN-0020',1,252654789,'Prata'),
+	      ('PHN-1220',2,000362236,'Preto'),
+	      ('kHN-1890',3,000362236,'Rosa'),
+	      ('SJN-5220',4,123689000,'Preto'),
+	      ('SLL-5028',5,123798011,'Azul');
+
+insert into Patio values(1,'Rua A',100),(2,'Rua B',1000);
+
+insert into Estaciona 
+values(1,1,'PHN-1220','10-09-2019','11-09-2019','18:00','07:00'),
+		  (2,1,'kHN-1890','11-09-2019','12-09-2019','18:30','07:40'),
+		  (3,2,'OKN-0020','11-09-2019','13-09-2019','19:30','18:40'),
+		  (4,2,'OKN-0020','14-09-2019','15-09-2019','20:30','18:50'),
+		  (5,2,'SJN-5220','14-09-2019','15-09-2019','22:30','19:50'),
+		  (6,1,'SLL-5028','14-09-2019','15-09-2019','22:30','19:50');
+		  
+		  
+-- Resolvendo as questões
+--1
+select c.nome as "Cliente",v.placa AS "Veículo", m.desc_2 AS "Modelo" 
+from Cliente c
+inner join Veiculo v on cpf =cliente_cpf
+inner join Modelo m on codMod = modelo_codMod;
+
+--2
+select c.nome as "Cliente",v.placa AS "Veículo", m.desc_2 AS "Modelo" 
+from Cliente c
+inner join Veiculo v on cpf =cliente_cpf
+right outer join Modelo m on codMod = modelo_codMod;
+
+--3
+select c.nome as "Cliente",m.desc_2 AS "Modelo" 
+from Cliente c
+inner join Veiculo v on cpf =cliente_cpf
+inner join Modelo m on codMod = modelo_codMod
+where cpf = 000362236;
+
+--4
+select  c.cpf, c.nome as "Cliente", v.placa, e.dtEntrada,e.dtSaida,e.hrEntrada, e.hrSaida
+from Cliente c
+inner join Veiculo v on v.cliente_cpf = c.cpf
+inner join Estaciona e on v.placa = e.veiculo_placa
+order by cpf;
+--4 Usando count
+SELECT c.nome,c.cpf,
+COUNT(c.nome) AS quantidade
+FROM Cliente c
+inner join Veiculo v on v.cliente_cpf = c.cpf
+inner join Estaciona e on v.placa = e.veiculo_placa
+GROUP BY c.cpf
+ORDER BY cpf;
+
+--5
+select  c.cpf, c.nome as "Cliente", v.placa, e.dtEntrada,e.hrEntrada,e.dtSaida,e.hrSaida
+from Cliente c
+inner join Veiculo v on v.cliente_cpf = c.cpf
+inner join Estaciona e on v.placa = e.veiculo_placa
+where c.cpf = 252654789
+
